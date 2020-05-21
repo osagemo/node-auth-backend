@@ -1,3 +1,4 @@
+const logger = require("../logger")(module);
 const User = require("../models/user");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("./../utils/appError");
@@ -27,6 +28,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 exports.signin = catchAsync(async (req, res, next) => {
   // already authenticated by middleware, give user token
+  logger.info(`User ${req.user.id} signed in`);
   res.json({ token: tokenForUser(req.user) });
 });
 
@@ -34,6 +36,6 @@ exports.signout = catchAsync(async (req, res, next) => {
   const user = req.user;
   user.lastLogoutAt = Date.now() - 1000;
   await user.save();
-  console.log(`signed ${user.email} out, last logout: ${user.lastLogoutAt}`);
+  logger.info(`User ${user._id} signed out, last logout: ${user.lastLogoutAt}`);
   res.json({ sucess: true });
 });

@@ -1,3 +1,4 @@
+const logger = require("../logger")(module);
 const mongoose = require("mongoose");
 
 module.exports = () => {
@@ -9,10 +10,10 @@ module.exports = () => {
   mongoose
     .connect(uri)
     .then(() => {
-      console.log("Successfully connected to Database");
+      logger.info("Successfully connected to Database");
     })
     .catch((err) => {
-      console.log("Database connection error: ", err);
+      logger.error(`Database connection error: ${err}`);
       // Mongo won't reconnect if this fails
     });
 };

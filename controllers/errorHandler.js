@@ -1,3 +1,4 @@
+const logger = require("../logger")(module);
 const AppError = require("../utils/appError");
 
 const handleCastErrorDB = (err) => {
@@ -14,7 +15,7 @@ const handleValidationErrorDB = (err) => {
 
 const sendErrorDev = (err, req, res) => {
   if (!err.isOperational) {
-    console.error(err);
+    logger.error(err);
   }
   return res.status(err.statusCode).json({
     status: err.status,
@@ -31,7 +32,8 @@ const sendErrorProd = (err, req, res) => {
       message: err.message,
     });
   }
-  console.error("Bad Error!", err.message, err.stack);
+  // Should it shutdown here?
+  logger.error("Programmatic Error ", err.message, err.stack);
   return res.status(500).json({
     status: "error",
     message: "Something went wrong!",

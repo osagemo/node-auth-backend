@@ -52,7 +52,6 @@ const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
         timestampAfterDate(iat, user.lastLogoutAt)
       ) {
         user.lastLoginAt = Date.now() - 1000;
-        // No callback, no promise?
         user.save().then(() => {
           done(null, user);
         });
@@ -76,3 +75,5 @@ function timestampAfterDate(iat, date) {
 // Tell passport to use this strategy
 passport.use(jwtLogin);
 passport.use(localLogin);
+
+module.exports = passport;

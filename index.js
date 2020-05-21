@@ -39,8 +39,23 @@ app.all("*", (req, res, next) => {
 app.use(errorHandler);
 
 // Server Setup
-app.listen(process.env.PORT, process.env.IP, function () {
+const server = app.listen(process.env.PORT, process.env.IP, function () {
   console.log(
     `Server started in ${process.env.NODE_ENV} mode, listening on ${process.env.IP}:${process.env.PORT}`
   );
+});
+
+process.on("unhandledRejection", (err) => {
+  console.log("Unhandled Rejection, shutting down process");
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM recieved. Shutting down process gracefully");
+  server.close(() => {
+    console.log("Server closed gracefully");
+  });
 });

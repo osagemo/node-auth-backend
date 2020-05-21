@@ -1,5 +1,6 @@
 const Authentication = require("./controllers/authentication");
 const passportService = require("./services/passport");
+const AppError = require("./utils/appError");
 const passport = require("passport");
 
 const requireAuth = passport.authenticate("jwt", { session: false });
@@ -12,4 +13,7 @@ module.exports = function (app) {
   app.post("/signup", Authentication.signup);
   app.post("/signin", requireSignin, Authentication.signin);
   app.post("/signout", requireAuth, Authentication.signout);
+  app.all("*", (req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`), 404);
+  });
 };

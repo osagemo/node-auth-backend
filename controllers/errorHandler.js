@@ -13,7 +13,9 @@ const handleValidationErrorDB = (err) => {
 };
 
 const sendErrorDev = (err, req, res) => {
-  console.error(err);
+  if (!err.isOperational) {
+    console.error(err);
+  }
   return res.status(err.statusCode).json({
     status: err.status,
     error: err,

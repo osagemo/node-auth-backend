@@ -32,8 +32,9 @@ const sendErrorProd = (err, req, res) => {
       message: err.message,
     });
   }
-  // Should it shutdown here?
-  logger.error("Programmatic Error ", err.message, err.stack);
+  // Should it shutdown here? App state is uncertain
+  // This includes any error thrown by any dependencies as they are not appErrors
+  logger.error("Programmatic Error ", err);
   return res.status(500).json({
     status: "error",
     message: "Something went wrong!",
@@ -47,13 +48,14 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === "production") {
-    // This shallow copy is not of Error class, maybe needs a different solution since error is logged based on copy in Prod, can interfere with loggers
-    let error = { ...err };
-    error.message = err.message;
-    error.stack = err.stack;
-    if (error.name === "CastError") error = handleCastErrorDB(error);
-    if (error.name === "ValidationError")
+    let error;
+    if (err.name === "CastError") {
+      error = handleCastErrorDB(error);
+    } else if (err.name === "ValidationError") {
       error = handleValidationErrorDB(error);
+    } else {
+      return sendErrorProd(err, req, res);
+    }
     sendErrorProd(error, req, res);
   }
 };

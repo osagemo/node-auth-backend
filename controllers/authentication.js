@@ -1,4 +1,6 @@
 const logger = require("../logger")(module);
+
+const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("./../utils/appError");
@@ -12,13 +14,13 @@ const tokenForUser = (user) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   const email = req.body.email;
-  const password = req.body.password;
+  const password = await bcrypt.hash(req.body.password, 10);
 
-  if (await User.exists({ email: email })) {
+  if (await User.query().findOne({ email })) {
     return next(new AppError("Email is in use", 422));
   }
 
-  const user = await User.create({
+  const user = await User.query().insert({
     email: email,
     password: password,
   });
@@ -33,9 +35,18 @@ exports.signin = catchAsync(async (req, res, next) => {
 });
 
 exports.signout = catchAsync(async (req, res, next) => {
-  const user = req.user;
-  user.lastLogoutAt = Date.now() - 1000;
-  await user.save();
-  logger.info(`User ${user._id} signed out, last logout: ${user.lastLogoutAt}`);
+  const lastLogoutAtISO = new Date(Date.now()).toISOString();
+  console.log("SETTING SIGNOUT AS ", lastLogoutAtISO);
+  const updatedUser = await User.query()
+    .findById(req.user.id)
+    .patch({
+      last_logout_at: lastLogoutAtISO,
+    })
+    .returning("*");
+  console.log(updatedUser);
+
+  logger.info(
+    `User ${updatedUser.id} signed out, last logout: ${updatedUser.lastLogoutAt}`
+  );
   res.json({ sucess: true });
 });

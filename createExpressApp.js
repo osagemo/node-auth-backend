@@ -6,7 +6,8 @@ const router = require("./router");
 const app = express();
 
 module.exports = () => {
-  require("./database/createDatabase")();
+  require("./database/createPgDatabase")();
+
   // MiddleWare
   app.use(morgan("combined"));
   app.use(bodyParser.json({ type: "*/*" }));

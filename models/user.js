@@ -1,40 +1,33 @@
-const { Schema, model } = require("mongoose");
+const { Model } = require("objection");
 const bcrypt = require("bcrypt");
 
-const userSchema = new Schema({
-  email: {
-    type: String,
-    required: [true, "You must provide an email"],
-    unique: true,
-    lowercase: true,
-  },
-  password: { type: String, required: [true, "You must provide a password"] },
-  passwordChangedAt: Date,
-  lastLoginAt: Date,
-  lastLogoutAt: Date,
-});
-
-// On save hook, encrypt password
-userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    const hash = await bcrypt.hash(this.password, 10);
-    this.password = hash;
+class User extends Model {
+  static get tableName() {
+    return "users";
   }
-  next();
-});
+  static get jsonSchema() {
+    return {
+      type: "object",
+      required: ["email", "password"],
 
-userSchema.pre("save", function (next) {
-  if (this.isModified("password") && !this.isNew) {
-    this.passwordChangedAt = Date.now() - 1000;
+      properties: {
+        id: { type: "integer" },
+        email: { type: "string", minLength: 1, maxLength: 255 },
+        password: { type: "string", minLength: 1, maxLength: 255 },
+        passwordChangedAt: { type: "date-time" },
+        lastLoginAt: { type: "date-time" },
+        lastLogoutAt: { type: "date-time" },
+      },
+    };
   }
-  next();
-});
 
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
-};
-
-const User = model("User", userSchema);
-// const ModelClass = model("User", userSchema);
+  async comparePassword(candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+  }
+}
 
 module.exports = User;
+
+// passwordChangedAt should be created via database trigger, other timestamps by API
+// Password should be encrypted before touching the db
+// comparepassword could be moved out of Model I guess, helper method used in auth

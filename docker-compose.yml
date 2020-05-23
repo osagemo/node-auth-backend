@@ -25,3 +25,15 @@ services:
       dockerfile: ./docker/mongoDB/Dockerfile
     ports:
       - "27017:27017"
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/postgres/Dockerfile
+    ports:
+      - "5432:5432"
+    #Extract to file
+    environment:
+      POSTGRES_DB: "auth"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "secret"

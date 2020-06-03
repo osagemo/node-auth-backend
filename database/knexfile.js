@@ -1,5 +1,5 @@
 module.exports = {
-  development: {
+  local: {
     client: "pg",
     connection: "postgres://user:secret@localhost:5432/auth",
     migrations: {
@@ -9,18 +9,23 @@ module.exports = {
       directory: "./seeds/dev",
     },
     useNullAsDefault: true,
-    pool: {
-      afterCreate: function (connection, callback) {
-        connection.query("SET timezone = UTC;", function (err) {
-          callback(err, connection);
-        });
-      },
+  },
+
+  development: {
+    client: "pg",
+    connection: process.env.DB_URI,
+    migrations: {
+      directory: "./migrations",
     },
+    seeds: {
+      directory: "./seeds/dev",
+    },
+    useNullAsDefault: true,
   },
 
   test: {
     client: "pg",
-    connection: "postgres://user:secret@localhost:5432/auth",
+    connection: process.env.DB_URI,
     migrations: {
       directory: "./migrations",
     },
@@ -50,3 +55,9 @@ module.exports = {
     EXECUTE FUNCTION update_password_timestamp();
   `,
 };
+
+const printEnv = () => {
+  console.log(process.env.DB_URI);
+};
+
+printEnv();

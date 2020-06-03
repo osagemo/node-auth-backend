@@ -5,9 +5,9 @@ exports.up = function (knex, Promise) {
     id SERIAL PRIMARY KEY NOT NULL,
     email varchar(100) NOT NULL,
     password varchar(100) NOT NULL,
-    password_changed_at TIMESTAMP,
-    last_login_at TIMESTAMP,
-    last_logout_at TIMESTAMP
+    password_changed_at TIMESTAMPTZ,
+    last_login_at TIMESTAMPTZ,
+    last_logout_at TIMESTAMPTZ
   );`;
   return knex.raw(createQuery).then(() => knex.raw(passwordChangedTrigger));
 };

@@ -2,7 +2,7 @@ const UPDATE_PASSWORD_TIMESTAMP_FUNCTION = `
 CREATE OR REPLACE FUNCTION update_password_timestamp()
   RETURNS trigger AS $$
   BEGIN
-    NEW.password_changed_at = now() AT TIME ZONE 'UTC';
+    NEW.password_changed_at = now();
     RETURN NEW;
   END;
 $$ language 'plpgsql';

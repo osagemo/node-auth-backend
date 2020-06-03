@@ -12,7 +12,6 @@ const localOptions = {
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET,
-  iat: Math.floor(Date.parse(new Date().toISOString()) / 1000),
 };
 
 const localLogin = new LocalStrategy(
@@ -60,7 +59,6 @@ const jwtLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
           last_login_at: lastLoginAtISO,
         })
         .returning("*");
-
       return done(null, updatedUser);
     } else {
       done(null, false);
@@ -71,13 +69,8 @@ const jwtLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
 });
 
 function timestampAfterDate(iat, date) {
-  console.log("comparing", new Date(iat * 1000), date);
-
   if (date) {
     const numericDate = Math.floor(Date.parse(date) / 1000);
-    console.log("comparing", iat, numericDate);
-    console.log(iat > numericDate);
-
     return iat > numericDate;
   }
   return true;

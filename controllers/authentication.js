@@ -1,5 +1,4 @@
 const logger = require("../logger")(module);
-
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const catchAsync = require("../utils/catchAsync");
@@ -36,17 +35,15 @@ exports.signin = catchAsync(async (req, res, next) => {
 
 exports.signout = catchAsync(async (req, res, next) => {
   const lastLogoutAtISO = new Date(Date.now()).toISOString();
-  console.log("SETTING SIGNOUT AS ", lastLogoutAtISO);
   const updatedUser = await User.query()
     .findById(req.user.id)
     .patch({
       last_logout_at: lastLogoutAtISO,
     })
     .returning("*");
-  console.log(updatedUser);
 
   logger.info(
-    `User ${updatedUser.id} signed out, last logout: ${updatedUser.lastLogoutAt}`
+    `User ${updatedUser.id} signed out, last_logout: ${updatedUser.last_logout_at}`
   );
   res.json({ sucess: true });
 });

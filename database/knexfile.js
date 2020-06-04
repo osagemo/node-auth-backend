@@ -55,9 +55,3 @@ module.exports = {
     EXECUTE FUNCTION update_password_timestamp();
   `,
 };
-
-const printEnv = () => {
-  console.log(process.env.DB_URI);
-};
-
-printEnv();

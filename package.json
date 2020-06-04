@@ -7,7 +7,7 @@
     "start": "node server.js",
     "prod": "pm2 start ecosystem.config.js --env production",
     "dev": "nodemon server.js",
-    "migrateLatest": "knex migrate:latest --knexfile database/knexfile.js"
+    "migrate-and-start": "knex migrate:latest --knexfile database/knexfile.js && node server.js"
   },
   "author": "",
   "license": "ISC",

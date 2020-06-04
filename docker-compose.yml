@@ -7,10 +7,13 @@ services:
     build:
       context: .
       dockerfile: ./docker/server/Dockerfile
-    command: bash -c "npm run migrateLatest && npm start"
     working_dir: /usr/src/server
     ports:
       - "3000:3000"
+    depends_on:
+      - "postgres"
+    command: npm start
+    restart: always
     # Using volumes overrides dockerignore..
     volumes:
       - ./:/usr/src/server
@@ -19,11 +22,13 @@ services:
       DB_URI: postgres://postgres:secret@postgres:5432/auth
 
   postgres:
+    container_name: db
     build:
       context: .
       dockerfile: ./docker/postgres/Dockerfile
     ports:
       - "5432:5432"
+    restart: always
     #Extract to file
     environment:
       POSTGRES_DB: "auth"

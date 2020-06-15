@@ -1,4 +1,5 @@
 const express = require("express");
+const databaseErrorHandler = require("./controllers/databaseErrorHandler");
 const errorHandler = require("./controllers/errorHandler");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
@@ -16,6 +17,7 @@ module.exports = () => {
   router(app);
 
   // Error handling middleware (after routes)
+  app.use(databaseErrorHandler);
   app.use(errorHandler);
 
   return app;

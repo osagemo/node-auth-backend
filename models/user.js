@@ -14,10 +14,10 @@ class User extends Model {
         id: { type: "integer" },
         email: { type: "string", minLength: 1, maxLength: 255 },
         password: { type: "string", minLength: 1, maxLength: 255 },
-        passwordChangedAt: { type: "date-time" },
-        lastLoginAt: { type: "date-time" },
-        lastLogoutAt: { type: "date-time" },
+        last_login_at: { type: "string", format: "date-time" },
+        last_logout_at: { type: "string", format: "date-time" },
       },
+      additionalProperties: false,
     };
   }
 

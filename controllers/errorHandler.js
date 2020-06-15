@@ -1,18 +1,6 @@
 const logger = require("../logger")(module);
 const AppError = require("../utils/appError");
 
-const handleCastErrorDB = (err) => {
-  const message = `Invalid ${err.path}: ${err.value}.`;
-  return new AppError(message, 400);
-};
-
-const handleValidationErrorDB = (err) => {
-  const errors = Object.values(err.errors).map((el) => el.message);
-
-  const message = `Invalid input data. ${errors.join(". ")}`;
-  return new AppError(message, 400);
-};
-
 const sendErrorDev = (err, req, res) => {
   if (!err.isOperational) {
     logger.error(err);
@@ -28,7 +16,7 @@ const sendErrorDev = (err, req, res) => {
 const sendErrorProd = (err, req, res) => {
   if (err.isOperational) {
     return res.status(err.statusCode).json({
-      status: err.status,
+      status: err.statusCode,
       message: err.message,
     });
   }
@@ -46,16 +34,10 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || "error";
 
   if (process.env.NODE_ENV === "development") {
+    logger.error(`Error type: ${err.name}`);
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === "production") {
-    let error;
-    if (err.name === "CastError") {
-      error = handleCastErrorDB(error);
-    } else if (err.name === "ValidationError") {
-      error = handleValidationErrorDB(error);
-    } else {
-      return sendErrorProd(err, req, res);
-    }
-    sendErrorProd(error, req, res);
+    logger.error(`Error type: ${err.name}`);
+    sendErrorProd(err, req, res);
   }
 };

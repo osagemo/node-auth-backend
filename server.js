@@ -9,6 +9,7 @@ process.on("uncaughtException", (err) => {
 dotenv.config();
 const logger = require("./logger")(module);
 const app = require("./createExpressApp")();
+require("./database/db")(); // initializes knex
 const server = app.listen(process.env.SERVER_PORT, function () {
   logger.info(
     `Server started in ${process.env.NODE_ENV} mode, listening on ${process.env.SERVER_IP}:${process.env.SERVER_PORT}`

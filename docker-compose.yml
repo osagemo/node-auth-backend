@@ -3,7 +3,7 @@ version: "3.7"
 services:
   # Backend API
   server:
-    container_name: api
+    container_name: auth_api
     build:
       context: .
       dockerfile: ./docker/server/Dockerfile
@@ -22,7 +22,7 @@ services:
       DB_URI: postgres://postgres:secret@postgres:5432/auth
 
   postgres:
-    container_name: db
+    container_name: auth_db
     build:
       context: .
       dockerfile: ./docker/postgres/Dockerfile
